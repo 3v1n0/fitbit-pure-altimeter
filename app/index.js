@@ -1,4 +1,5 @@
 import Barometer from "barometer";
+import display from "display";
 import document from "document";
 import clock from "clock";
 import me from "appbit"
@@ -77,7 +78,9 @@ barometer.addEventListener("reading", () => {
 });
 barometer.start();
 
-/* Toggle barometer on display.... */
+display.addEventListener("change", () => {
+    display.on ? barometer.start() : barometer.stop();
+});
 
 clock.addEventListener("tick", onTick);
 onTick({ date: new Date() });
