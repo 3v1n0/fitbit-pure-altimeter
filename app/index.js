@@ -31,7 +31,7 @@ function updateUI(alt) {
 function onBarometerEvent() {
     let pressure;
 
-    if (barometer.readings && barometer.readings.pressure.length) {
+    if (barometer.readings && barometer.readings.pressure) {
         const sum = barometer.readings.pressure.reduce((a, b) => a + b, 0);
         pressure = (sum / barometer.readings.pressure.length) || 0;
     }
