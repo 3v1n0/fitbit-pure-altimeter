@@ -1,0 +1,28 @@
+{
+  "name": "pure-altimeter",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPLv3",
+  "devDependencies": {
+    "@fitbit/sdk": "~5.0.1",
+    "@fitbit/sdk-cli": "^1.7.3"
+  },
+  "fitbit": {
+    "appUUID": "93d7ab43-6271-4d9f-a77b-b4a55c26f1f0",
+    "appType": "app",
+    "appDisplayName": "Pure Altimeter",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#007aa0",
+    "requestedPermissions": [],
+    "buildTargets": [
+      "atlas",
+      "vulcan"
+    ],
+    "i18n": {},
+    "defaultLanguage": "en-US"
+  },
+  "scripts": {
+    "build": "fitbit-build",
+    "debug": "fitbit"
+  }
+}

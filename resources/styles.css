@@ -1,0 +1,20 @@
+.application-fill { fill: #007aa0; }
+.app-gradient-background { fill: #007aa0; }
+.foreground-fill { fill: fb-white; }
+.background-fill { fill: fb-black; }
+
+#clock {
+  x: 50%;
+  y: 32;
+  font-size: 28;
+  text-length: 8;
+}
+
+#value {
+  fill: fb-white;
+  text-length: 4;
+}
+
+#unit {
+  fill: fb-gray;
+}
