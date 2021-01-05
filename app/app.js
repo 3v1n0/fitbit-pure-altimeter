@@ -8,6 +8,7 @@ import {
 } from 'user-settings';
 
 const METRIC_UNITS = units.distance === 'metric';
+const FEET_TO_METERS = 0.3048;
 
 function addZeros(num) {
     return num < 10 ? `0${num}` : num;
@@ -59,14 +60,16 @@ export default class App {
         const atm = 101325;
         const pow = 0.190284;
         const coefficient = 145366.45;
-        const feetToMeters = 0.3048;
         const ftElevation = (1 - Math.pow(paPressure / atm, pow)) * coefficient;
 
-        return (METRIC_UNITS) ? ftElevation * feetToMeters : ftElevation;
+        return ftElevation * FEET_TO_METERS;
     }
 
     updateAltitude() {
-        this.valueEl.text = Math.floor(this._lastAltitude).toLocaleString();
+        const localeAltitude = (METRIC_UNITS) ?
+            this._lastAltitude : this._lastAltitude / FEET_TO_METERS;
+
+        this.valueEl.text = Math.floor(localeAltitude).toLocaleString();
         this.unitEl.text = (METRIC_UNITS) ? 'm' : 'ft';
     }
 
@@ -86,7 +89,7 @@ export default class App {
             pressure = this.barometer.pressure;
 
         this._lastAltitude = this.computeAltitude(pressure);
-        console.log(`Barometer: ${this.barometer.pressure}, Altitude is ${this._lastAltitude}`);
+        console.log(`Barometer: ${pressure} Pa, Altitude is ${this._lastAltitude} m`);
 
         if (!display.aodActive)
             this.updateAltitude();
