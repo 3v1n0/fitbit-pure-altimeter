@@ -33,6 +33,7 @@ export default class App {
     constructor() {
         this._defaultBgFill = this.bgEl.style.fill;
         this._lastAltitude = undefined;
+        this._lastPressure = undefined;
         this._lastRelevantAltitude = undefined;
         this._lastTrendUpdate = 0;
         this._trend = Trend.NONE;
@@ -140,8 +141,16 @@ export default class App {
         if (!pressure)
             pressure = this.barometer.pressure;
 
+        this.updatePressure(pressure);
+    }
+
+    updatePressure(pressure) {
+        if (pressure === this._lastPressure)
+            return;
+
         let altitude = this.computeAltitude(pressure);
         this._trend = this.computeTrend(altitude);
+        this._lastPressure = pressure;
         this._lastAltitude = altitude;
         console.log(`Barometer: ${pressure} Pa, Altitude is ${altitude} m, trend: ${this._trend}`);
 
