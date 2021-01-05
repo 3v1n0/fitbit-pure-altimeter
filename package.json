@@ -13,9 +13,7 @@
     "appDisplayName": "Pure Altimeter",
     "iconFile": "resources/icon.png",
     "wipeColor": "#007aa0",
-    "requestedPermissions": [
-      "access_aod"
-    ],
+    "requestedPermissions": [],
     "buildTargets": [
       "atlas",
       "vulcan"
