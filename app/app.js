@@ -11,6 +11,7 @@ const METRIC_UNITS = units.distance === 'metric';
 const FEET_TO_METERS = 0.3048;
 const DELTA_THRESHOLD = 2.5; /* in meters */
 const TIME_THRESHOLD = 15; /* in seconds */
+const DEBUG_STEP = 30 /* in Pa */
 
 function addZeros(num) {
     return num < 10 ? `0${num}` : num;
@@ -89,6 +90,12 @@ export default class App {
         const timeDiff = timestamp - this._lastTrendUpdate;
         const altDiff = altitude - this._lastRelevantAltitude;
 
+        if (this._debugMode) {
+            console.log(`timestamp: ${timestamp}`);
+            console.log(`timeDiff: ${timeDiff}`);
+            console.log(`altDiff: ${altDiff}`);
+        }
+
         if (Math.abs(altDiff) < DELTA_THRESHOLD) {
             if (timeDiff < TIME_THRESHOLD)
                 return this._trend;
@@ -127,6 +134,8 @@ export default class App {
         if (display.aodActive) {
             document.getElementsByClassName('non-aod').forEach(
                 e => e.style.display = 'none');
+        } else if (this._debugMode) {
+            this.enableDebugUI();
         }
     }
 
@@ -184,5 +193,34 @@ export default class App {
             { frequency: 0.5, batch: 30 } : { frequency: 1, batch: 3 });
         this.barometer.addEventListener('reading', this.onBarometerEvent);
         this.barometer.start();
+    }
+
+    /* Debug stuff */
+
+    enableDebugUI() {
+        document.getElementsByClassName('debug-ui').forEach(
+            e => e.style.display = 'inline');
+
+        if (this._debugMode)
+            return;
+
+        this._debugMode = true;
+
+        const up = document.getElementById('dbg-trend-up');
+        const stable = document.getElementById('dbg-trend-stable');
+        const down = document.getElementById('dbg-trend-down');
+
+        up.addEventListener('click', () => {
+            this.updatePressure(this._lastPressure - DEBUG_STEP);
+        });
+
+        stable.addEventListener('click', () => {
+            const action = ((Math.random() * 10) | 0) % 2;
+            this.updatePressure(this._lastPressure + (action ? 1 : -1));
+        });
+
+        down.addEventListener('click', () => {
+            this.updatePressure(this._lastPressure + DEBUG_STEP);
+        });
     }
 }

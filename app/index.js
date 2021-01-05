@@ -10,3 +10,6 @@ if (display.aodEnabled && me.permissions.granted('access_aod')) {
 
 const app = new App();
 me.onunload = () => app.destroy();
+
+// Mostly for being used in simulator
+// app.enableDebugUI();
