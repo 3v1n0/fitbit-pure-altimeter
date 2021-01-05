@@ -18,3 +18,21 @@
 #unit {
   fill: fb-gray;
 }
+
+.trend-indicator {
+  width: 20%;
+  height: 20%;
+  x: 75%;
+}
+
+#trend-up {
+  fill: fb-green;
+  fill-opacity: 0.5;
+  y: 10%
+}
+
+#trend-down {
+  fill: fb-red;
+  fill-opacity: 0.5;
+  y: 75%
+}

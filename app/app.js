@@ -9,20 +9,33 @@ import {
 
 const METRIC_UNITS = units.distance === 'metric';
 const FEET_TO_METERS = 0.3048;
+const DELTA_THRESHOLD = 2.5; /* in meters */
+const TIME_THRESHOLD = 15; /* in seconds */
 
 function addZeros(num) {
     return num < 10 ? `0${num}` : num;
 }
+
+const Trend = Object.freeze({
+    NONE: 'none',
+    UP: 'up',
+    DOWN: 'down',
+});
 
 export default class App {
     valueEl = document.getElementById('value');
     bgEl = document.getElementById('bg');
     unitEl = document.getElementById('unit');
     clockEl = document.getElementById('clock');
+    trendUpEl = document.getElementById('trend-up');
+    trendDownEl = document.getElementById('trend-down');
 
     constructor() {
         this._defaultBgFill = this.bgEl.style.fill;
-        this._lastAltitude = 0;
+        this._lastAltitude = undefined;
+        this._lastRelevantAltitude = undefined;
+        this._lastTrendUpdate = 0;
+        this._trend = Trend.NONE;
 
         clock.addEventListener('tick', this.onTick);
         this.onTick({ date: new Date() });
@@ -65,16 +78,55 @@ export default class App {
         return ftElevation * FEET_TO_METERS;
     }
 
+    computeTrend(altitude) {
+        if (this._lastRelevantAltitude === undefined) {
+            this._lastRelevantAltitude = altitude;
+            return Trend.NONE;
+        }
+
+        const timestamp = (Date.now() / 1000) | 0;
+        const timeDiff = timestamp - this._lastTrendUpdate;
+        const altDiff = altitude - this._lastRelevantAltitude;
+
+        if (Math.abs(altDiff) < DELTA_THRESHOLD) {
+            if (timeDiff < TIME_THRESHOLD)
+                return this._trend;
+
+            this._lastTrendUpdate = timestamp;
+            return Trend.NONE;
+        }
+
+        this._lastRelevantAltitude = altitude;
+        this._lastTrendUpdate = timestamp;
+
+        return altDiff > 0 ? Trend.UP : Trend.DOWN;
+    }
+
     updateAltitude() {
         const localeAltitude = (METRIC_UNITS) ?
             this._lastAltitude : this._lastAltitude / FEET_TO_METERS;
 
         this.valueEl.text = Math.floor(localeAltitude).toLocaleString();
         this.unitEl.text = (METRIC_UNITS) ? 'm' : 'ft';
+
+        if (!display.aodActive) {
+            document.getElementsByClassName('trend-indicator').forEach(
+                e => e.style.display = 'none');
+
+            if (this._trend === Trend.UP)
+                this.trendUpEl.style.display = 'inline';
+            else if (this._trend === Trend.DOWN)
+                this.trendDownEl.style.display = 'inline';
+        }
     }
 
     aodUIToggle() {
         this.bgEl.style.fill = display.aodActive ? 'black' : this._defaultBgFill;
+
+        if (display.aodActive) {
+            document.getElementsByClassName('non-aod').forEach(
+                e => e.style.display = 'none');
+        }
     }
 
     onBarometerEvent = () => {
@@ -88,8 +140,10 @@ export default class App {
         if (!pressure)
             pressure = this.barometer.pressure;
 
-        this._lastAltitude = this.computeAltitude(pressure);
-        console.log(`Barometer: ${pressure} Pa, Altitude is ${this._lastAltitude} m`);
+        let altitude = this.computeAltitude(pressure);
+        this._trend = this.computeTrend(altitude);
+        this._lastAltitude = altitude;
+        console.log(`Barometer: ${pressure} Pa, Altitude is ${altitude} m, trend: ${this._trend}`);
 
         if (!display.aodActive)
             this.updateAltitude();

@@ -8,6 +8,9 @@
       <text id="clock" class="center-text application-fill" />
       <text id="value" x="50%" y="60%" class="center-text h1" />
       <text id="unit" x="50%" y="70%" class="center-text p3" />
+
+      <image id="trend-up" display="none" class="trend-indicator non-aod" href="icons/going-up.png" />
+      <image id="trend-down" display="none" class="trend-indicator non-aod" href="icons/going-down.png" />
     </svg>
   </use>
 </svg>
