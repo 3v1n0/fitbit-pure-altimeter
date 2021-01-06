@@ -42,30 +42,20 @@ export default class App {
         clock.addEventListener('tick', this.onTick);
         this.onTick({ date: new Date() });
 
-        this.barometer = new Barometer()
-        const initialBarometerListener = () => {
-            this.onBarometerEvent();
-
-            this.barometer.removeEventListener('reading', initialBarometerListener);
-            this.ensureBarometerMonitoring();
-        };
-        this.barometer.addEventListener('reading', initialBarometerListener);
-        this.barometer.start();
+        this.initBarometer();
 
         display.addEventListener('change', () => {
             if (display.aodAllowed) {
                 this.aodUIToggle();
                 this.ensureBarometerMonitoring();
             } else {
-                display.on ? this.barometer.start() : this.barometer.stop();
+                display.on ? this.initBarometer() : this.stopBarometer();
             }
         });
     }
 
     destroy() {
-        this.barometer.removeEventListener('reading', this.onBarometerEvent);
-        this.barometer.stop();
-        this.barometer = null;
+        this.stopBarometer();
 
         clock.removeEventListener('tick', this.onTick);
     }
@@ -183,12 +173,29 @@ export default class App {
             this.updateAltitude();
     }
 
-    ensureBarometerMonitoring() {
+    initBarometer() {
+        this.stopBarometer();
+        this.barometer = new Barometer();
+        const initialBarometerListener = () => {
+            this.onBarometerEvent();
+
+            this.barometer.removeEventListener('reading', initialBarometerListener);
+            this.ensureBarometerMonitoring();
+        };
+        this.barometer.addEventListener('reading', initialBarometerListener);
+        this.barometer.start();
+    }
+
+    stopBarometer() {
         if (this.barometer) {
             this.barometer.removeEventListener('reading', this.onBarometerEvent);
             this.barometer.stop();
+            this.barometer = null;
         }
+    }
 
+    ensureBarometerMonitoring() {
+        this.stopBarometer();
         this.barometer = new Barometer(display.aodActive ?
             { frequency: 0.5, batch: 30 } : { frequency: 1, batch: 3 });
         this.barometer.addEventListener('reading', this.onBarometerEvent);
