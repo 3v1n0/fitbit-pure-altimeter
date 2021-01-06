@@ -9,8 +9,8 @@ import {
 
 const METRIC_UNITS = units.distance === 'metric';
 const FEET_TO_METERS = 0.3048;
-const DELTA_THRESHOLD = 2.5; /* in meters */
-const TIME_THRESHOLD = 15; /* in seconds */
+const DELTA_THRESHOLD = 2.3; /* in meters */
+const TIME_THRESHOLD = 20; /* in seconds */
 const DEBUG_STEP = 30 /* in Pa */
 
 function addZeros(num) {
