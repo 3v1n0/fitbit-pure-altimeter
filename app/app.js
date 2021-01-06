@@ -47,7 +47,7 @@ export default class App {
         display.addEventListener('change', () => {
             if (display.aodAllowed) {
                 this.aodUIToggle();
-                this.ensureBarometerMonitoring();
+                display.aodActive ? this.ensureBarometerMonitoring() : this.initBarometer();
             } else {
                 display.on ? this.initBarometer() : this.stopBarometer();
             }
